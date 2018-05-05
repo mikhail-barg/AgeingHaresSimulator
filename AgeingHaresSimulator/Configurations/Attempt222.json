@@ -1,0 +1,46 @@
+{
+  "SettingsVersion": 1.0,
+  "InitialPopulationSize": 1000,
+  "AgeingGeneInitialDistribution": {
+    "Mean": 0.03,
+    "StdDev": 0.01
+  },
+  "CunningGeneInitialDistribution": {
+    "Mean": 6.0,
+    "StdDev": 1.1
+  },
+  "SurvivabilityToSurvivalProbabilityTransfromParams": {
+    "X0": 3.0,
+    "K": 0.5
+  },
+  "CrysisProbability": 0.04,
+  "CrysisPowerDistribution": {
+    "Mean": 1.0,
+    "StdDev": 0.0
+  },
+  "YearsWithoutAgeingEffect": 1,
+  "PopulationSizeToMatingProbabilityTransformParams": {
+    "X0": 1000.0,
+    "K": 0.01
+  },
+  "CrossoverProbability": 0.0,
+  "AgeingGeneMutationParams": {
+    "MutationProbability": 0.0,
+    "Distribution": {
+      "Mean": 0.0,
+      "StdDev": 0.5
+    }
+  },
+  "CunningGeneMutationParams": {
+    "MutationProbability": 0.0,
+    "Distribution": {
+      "Mean": 0.0,
+      "StdDev": 1.1
+    }
+  },
+  "InitialSpeed": 10.0,
+  "CunningToSpeedPenaltyTransformParams": {
+    "X0": 10.0,
+    "K": 0.5
+  }
+}
