@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
-namespace AgeingHaresSimulator.UI
+namespace AgeingHaresSimulator.Common.UI
 {
     public partial class NormalDistributionEditorForm : Form
     {

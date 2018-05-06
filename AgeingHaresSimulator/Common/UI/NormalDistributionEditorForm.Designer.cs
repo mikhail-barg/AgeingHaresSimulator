@@ -1,4 +1,4 @@
-﻿namespace AgeingHaresSimulator.UI
+﻿namespace AgeingHaresSimulator.Common.UI
 {
     partial class NormalDistributionEditorForm
     {

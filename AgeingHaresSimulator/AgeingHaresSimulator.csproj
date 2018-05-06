@@ -65,6 +65,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\LogisticFunction.cs" />
+    <Compile Include="Common\NormalDistribution.cs" />
     <Compile Include="ExceptionViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -86,13 +88,13 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Species.cs" />
     <Compile Include="Stats.cs" />
-    <Compile Include="UI\NormalDistributionEditorForm.cs">
+    <Compile Include="Common\UI\NormalDistributionEditorForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UI\NormalDistributionEditorForm.Designer.cs">
+    <Compile Include="Common\UI\NormalDistributionEditorForm.Designer.cs">
       <DependentUpon>NormalDistributionEditorForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="UI\NormalDistributionUiEditor.cs" />
+    <Compile Include="Common\UI\NormalDistributionUiEditor.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="ExceptionViewForm.resx">
       <DependentUpon>ExceptionViewForm.cs</DependentUpon>
@@ -112,7 +114,7 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="UI\NormalDistributionEditorForm.resx">
+    <EmbeddedResource Include="Common\UI\NormalDistributionEditorForm.resx">
       <DependentUpon>NormalDistributionEditorForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

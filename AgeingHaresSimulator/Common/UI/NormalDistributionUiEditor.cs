@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AgeingHaresSimulator.UI
+namespace AgeingHaresSimulator.Common.UI
 {
     internal sealed class NormalDistributionUiEditor : UITypeEditor
     {
