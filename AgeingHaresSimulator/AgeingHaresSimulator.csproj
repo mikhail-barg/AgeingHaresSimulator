@@ -86,6 +86,13 @@
     <Compile Include="Settings.cs" />
     <Compile Include="Species.cs" />
     <Compile Include="Stats.cs" />
+    <Compile Include="UI\NormalDistributionEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UI\NormalDistributionEditorForm.Designer.cs">
+      <DependentUpon>NormalDistributionEditorForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UI\NormalDistributionUiEditor.cs" />
     <Compile Include="Utils.cs" />
     <EmbeddedResource Include="ExceptionViewForm.resx">
       <DependentUpon>ExceptionViewForm.cs</DependentUpon>
@@ -105,6 +112,9 @@
     <Content Include="NLog.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="UI\NormalDistributionEditorForm.resx">
+      <DependentUpon>NormalDistributionEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

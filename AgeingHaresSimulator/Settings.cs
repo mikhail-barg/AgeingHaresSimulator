@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing.Design;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AgeingHaresSimulator.UI;
 using Newtonsoft.Json;
 
 namespace AgeingHaresSimulator
 {
-    //[TypeConverter(typeof(ExpandableObjectConverter))]
-    //[JsonConverter(typeof(NoTypeConverterJsonConverter<Settings>))]
     public sealed class Settings
     {
         private static JsonSerializerSettings s_jsonSettings = new JsonSerializerSettings() {
@@ -32,11 +32,13 @@ namespace AgeingHaresSimulator
 
         [Category("1. Initial"), Description("Distribution parameters for the Ageing gene value in initial population")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public NormalDistribution AgeingGeneInitialDistribution { get; private set; } = new NormalDistribution();
+        [Editor(typeof(NormalDistributionUiEditor), typeof(UITypeEditor))]
+        public NormalDistribution AgeingGeneInitialDistribution { get; set; } = new NormalDistribution();
 
         [Category("1. Initial"), Description("Distribution parameters for the Cunning gene value in initial population")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public NormalDistribution CunningGeneInitialDistribution { get; private set; } = new NormalDistribution();
+        [Editor(typeof(NormalDistributionUiEditor), typeof(UITypeEditor))]
+        public NormalDistribution CunningGeneInitialDistribution { get; set; } = new NormalDistribution();
 
 
         [Category("2. Selection"), Description("Parameters of a logistic function transforming the individual's Survivability into a probability to survive during current year. Survivability = Max(speed, cunning)")]
@@ -49,7 +51,8 @@ namespace AgeingHaresSimulator
 
         [Category("3. Crysises"), Description("Parameters of the normal distribution producing the power of the crysis. The power is a fraction of speed penalty applied to all individuals during the year's survival phase")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public NormalDistribution CrysisPowerDistribution { get; private set; } = new NormalDistribution();
+        [Editor(typeof(NormalDistributionUiEditor), typeof(UITypeEditor))]
+        public NormalDistribution CrysisPowerDistribution { get; set; } = new NormalDistribution();
 
 
         [Category("4. Ageing"), Description("Number of years since birth, when ageing has no effect on speed")]
@@ -121,14 +124,13 @@ namespace AgeingHaresSimulator
         }
     }
 
-    //[TypeConverter(typeof(ExpandableObjectConverter))]
-    //[JsonConverter(typeof(NoTypeConverterJsonConverter<MutationParams>))]
     public sealed class MutationParams
     {
         public double MutationProbability { get; set; } = 0.01;
 
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public NormalDistribution Distribution { get; private set; } = new NormalDistribution();
+        [Editor(typeof(NormalDistributionUiEditor), typeof(UITypeEditor))]
+        public NormalDistribution Distribution { get; set; } = new NormalDistribution();
 
         public override string ToString()
         {
@@ -136,16 +138,21 @@ namespace AgeingHaresSimulator
         }
     }
 
-    //[TypeConverter(typeof(ExpandableObjectConverter))]
-    //[JsonConverter(typeof(NoTypeConverterJsonConverter<NormalDistribution>))]
     public sealed class NormalDistribution
     {
+        private static readonly double SQRT_2PI = Math.Sqrt(2 * Math.PI);
+
         public double Mean { get; set; } = 0.0;
         public double StdDev { get; set; } = 1.0;
 
         public override string ToString()
         {
             return $"N{{{Mean}, {StdDev}}}";
+        }
+
+        public NormalDistribution Clone()
+        {
+            return (NormalDistribution)this.MemberwiseClone();
         }
 
         public double Sample(Random random)
@@ -159,11 +166,21 @@ namespace AgeingHaresSimulator
 
             return randNormal;
         }
+
+        internal double Transform(double x)
+        {
+            //https://en.wikipedia.org/wiki/Normal_distribution
+            /*
+             
+             Y = 1 / Sqrt(2 * Pi * stdDev^2) * exp(- (x - Mean)^2 / (2*stdDev^2)
+             
+             */
+
+            double y = 1.0 / (SQRT_2PI * this.StdDev) * Math.Exp( - (x - this.Mean) * (x - this.Mean) / (2 * this.StdDev * this.StdDev));
+            return y;
+        }
     }
 
-
-    //[TypeConverter(typeof(ExpandableObjectConverter))]
-    //[JsonConverter(typeof(NoTypeConverterJsonConverter<LogisticFunction>))]
     public sealed class LogisticFunction
     {
         [Description("The x-value of the sigmoid's midpoint")]
