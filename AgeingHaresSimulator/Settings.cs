@@ -25,7 +25,7 @@ namespace AgeingHaresSimulator
         }
 
         [JsonProperty()]
-        private decimal SettingsVersion { get; set; } = 1.0m;
+        private decimal SettingsVersion { get; set; } = 1.1m;
 
         [Category("1. Initial"), Description("Number of individuals in initial population")]
         public int InitialPopulationSize { get; set; } = 25;
@@ -76,14 +76,22 @@ namespace AgeingHaresSimulator
         [Category("7. New individual"), Description("Default speed at the moment of birth")]
         public double InitialSpeed { get; set; } = 10.0;
 
+        /*
         [Category("7. New individual"), Description("Parameters of logistic function transforming cunning value into speed decrease penalty. The penalty is fraction of initial speed descrease")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         public LogisticFunction CunningToSpeedPenaltyTransformParams { get; private set; } = new LogisticFunction();
+        */
 
-                
+        [Category("7. New individual"), Description("Maximum value for cunning. Set to 0 to disable limit")]
+        public double MaximalCunning { get; set; } = 0.0;
+
+        [Category("7. New individual"), Description("Cunning to speed penalty linear transform coefficient. Penalty = Cunning * Coefficient")]
+        public double CunningToSpeedPenaltyCoefficient { get; set; } = 0.0;
+
         internal double CunningToSpeedPenaltyTransform(double cunningValue)
         {
-            double penalty = this.CunningToSpeedPenaltyTransformParams.Evaluate(cunningValue);
+            //double penalty = this.CunningToSpeedPenaltyTransformParams.Evaluate(cunningValue);
+            double penalty = this.CunningToSpeedPenaltyCoefficient * cunningValue;
             return penalty;
         }
 

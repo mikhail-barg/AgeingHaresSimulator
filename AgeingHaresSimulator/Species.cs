@@ -12,11 +12,11 @@ namespace AgeingHaresSimulator
         public double cunningGene { get; set; }
         public double ageingGene { get; set; }
 
-        internal void ApplyMutations(Random random, MutationParams ageingGeneMutationParams, MutationParams cunningGeneMutationParams)
+        internal void ApplyMutations(Random random, Settings settings)
         {
-            if (random.ProbCheck(ageingGeneMutationParams.MutationProbability))
+            if (random.ProbCheck(settings.AgeingGeneMutationParams.MutationProbability))
             {
-                this.ageingGene += this.ageingGene * ageingGeneMutationParams.Distribution.Sample(random);
+                this.ageingGene += this.ageingGene * settings.AgeingGeneMutationParams.Distribution.Sample(random);
                 if (this.ageingGene < 0)
                 {
                     this.ageingGene = 0;
@@ -27,12 +27,16 @@ namespace AgeingHaresSimulator
                 }
             }
 
-            if (random.ProbCheck(cunningGeneMutationParams.MutationProbability))
+            if (random.ProbCheck(settings.CunningGeneMutationParams.MutationProbability))
             {
-                this.cunningGene += this.cunningGene * cunningGeneMutationParams.Distribution.Sample(random);
+                this.cunningGene += this.cunningGene * settings.CunningGeneMutationParams.Distribution.Sample(random);
                 if (this.cunningGene < 0)
                 {
                     this.cunningGene = 0;
+                }
+                if (settings.MaximalCunning > 0 && this.cunningGene > settings.MaximalCunning)
+                {
+                    this.cunningGene = settings.MaximalCunning;
                 }
             }
         }
@@ -54,6 +58,10 @@ namespace AgeingHaresSimulator
             {
                 chromosome.cunningGene = 0;
             }
+            if (settings.MaximalCunning > 0 && chromosome.cunningGene > settings.MaximalCunning)
+            {
+                chromosome.cunningGene = settings.MaximalCunning;
+            }
             return chromosome;
         }
     }
@@ -68,11 +76,18 @@ namespace AgeingHaresSimulator
             this.cunning = (chromosome1.cunningGene + chromosome2.cunningGene) / 2;
             this.ageingSpeed = (chromosome1.ageingGene + chromosome2.ageingGene) / 2;
             double speedPenalty = cunningToSpeedPenaltyTransform(this.cunning);
+            /*
             if (speedPenalty < 0 || speedPenalty > 1)
             {
                 throw new ArgumentException($"Bad transform of cunning to speed penalty, cunning was {cunning}, got penalty {speedPenalty}");
             }
             this.speed = initialSpeed * (1 - speedPenalty);
+            */
+            this.speed = initialSpeed - speedPenalty;
+            if (this.speed < 0)
+            {
+                this.speed = 0;
+            }
         }
 
         public int age { get; private set; } = 0;
@@ -141,8 +156,8 @@ namespace AgeingHaresSimulator
             Chromosome chromosome1 = parent1.SelectChromosomeForOffspring(random, settings.CrossoverProbability);
             Chromosome chromosome2 = parent2.SelectChromosomeForOffspring(random, settings.CrossoverProbability);
 
-            chromosome1.ApplyMutations(random, settings.AgeingGeneMutationParams, settings.CunningGeneMutationParams);
-            chromosome2.ApplyMutations(random, settings.AgeingGeneMutationParams, settings.CunningGeneMutationParams);
+            chromosome1.ApplyMutations(random, settings);
+            chromosome2.ApplyMutations(random, settings);
 
             Species result = new Species(chromosome1, chromosome2, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
 
