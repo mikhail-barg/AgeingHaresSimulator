@@ -67,6 +67,13 @@
   <ItemGroup>
     <Compile Include="Common\LogisticFunction.cs" />
     <Compile Include="Common\NormalDistribution.cs" />
+    <Compile Include="Common\UI\LogisticFunctionUiEditor.cs" />
+    <Compile Include="Common\UI\LogisticFunctionEditorForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Common\UI\LogisticFunctionEditorForm.Designer.cs">
+      <DependentUpon>LogisticFunctionEditorForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="ExceptionViewForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -96,6 +103,9 @@
     </Compile>
     <Compile Include="Common\UI\NormalDistributionUiEditor.cs" />
     <Compile Include="Utils.cs" />
+    <EmbeddedResource Include="Common\UI\LogisticFunctionEditorForm.resx">
+      <DependentUpon>LogisticFunctionEditorForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="ExceptionViewForm.resx">
       <DependentUpon>ExceptionViewForm.cs</DependentUpon>
     </EmbeddedResource>

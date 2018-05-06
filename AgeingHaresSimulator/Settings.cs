@@ -44,7 +44,8 @@ namespace AgeingHaresSimulator
 
         [Category("2. Selection"), Description("Parameters of a logistic function transforming the individual's Survivability into a probability to survive during current year. Survivability = Max(speed, cunning)")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public LogisticFunction SurvivabilityToSurvivalProbabilityTransfromParams { get; private set; } = new LogisticFunction();
+        [Editor(typeof(LogisticFunctionUiEditor), typeof(UITypeEditor))]
+        public LogisticFunction SurvivabilityToSurvivalProbabilityTransfromParams { get; set; } = new LogisticFunction();
 
 
         [Category("3. Crysises"), Description("Probability of the year having a crysis. During the crysis speed is affected by the penalty, governed by CrysisPowerDistribution")]
@@ -62,7 +63,8 @@ namespace AgeingHaresSimulator
 
         [Category("5. Mating"), Description("Parameters of a (reverse)logistic function transforming population size into the probability of having an offspring at current year. The function is applied as P=(1-Y), i.e. the larget the population is, the smaller the probability of mating")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public LogisticFunction PopulationSizeToMatingProbabilityTransformParams { get; private set; } = new LogisticFunction();
+        [Editor(typeof(LogisticFunctionUiEditor), typeof(UITypeEditor))]
+        public LogisticFunction PopulationSizeToMatingProbabilityTransformParams { get; set; } = new LogisticFunction();
 
 
         [Category("6. Sex"), Description("Probability of taking second gene from another allele [0 - 0.5]. 0 means no crossover, i.e. genes are linked and always inhereted together")]
@@ -83,7 +85,8 @@ namespace AgeingHaresSimulator
         /*
         [Category("7. New individual"), Description("Parameters of logistic function transforming cunning value into speed decrease penalty. The penalty is fraction of initial speed descrease")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
-        public LogisticFunction CunningToSpeedPenaltyTransformParams { get; private set; } = new LogisticFunction();
+        [Editor(typeof(LogisticFunctionUiEditor), typeof(UITypeEditor))]
+        public LogisticFunction CunningToSpeedPenaltyTransformParams { get; set; } = new LogisticFunction();
         */
 
         [Category("7. New individual"), Description("Maximum value for cunning. Set to 0 to disable limit")]

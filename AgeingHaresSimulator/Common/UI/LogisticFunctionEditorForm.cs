@@ -11,15 +11,14 @@ using System.Windows.Forms.DataVisualization.Charting;
 
 namespace AgeingHaresSimulator.Common.UI
 {
-    public partial class NormalDistributionEditorForm : Form
+    public partial class LogisticFunctionEditorForm : Form
     {
         private const int POINTS_COUNT = 70;
-        private const double SIZE_SCALE_SIGMA = 3;
 
-        internal readonly NormalDistribution Value;
+        internal readonly LogisticFunction Value;
         private readonly Series m_series;
 
-        public NormalDistributionEditorForm(NormalDistribution value)
+        public LogisticFunctionEditorForm(LogisticFunction value)
         {
             this.Value = value.Clone();
             InitializeComponent();
@@ -31,18 +30,19 @@ namespace AgeingHaresSimulator.Common.UI
 
         internal void UpdateData()
         {
-            double stepSize = SIZE_SCALE_SIGMA * this.Value.StdDev / (POINTS_COUNT / 2);
-            double minValue = this.Value.Mean - SIZE_SCALE_SIGMA * this.Value.StdDev;
+            double spreadSize = 7 / this.Value.K;
+            double stepSize = spreadSize / (POINTS_COUNT / 2);
+            double minValue = this.Value.X0 - spreadSize;
             m_series.Points.Clear();
             for (int i = 0; i < POINTS_COUNT; ++i)
             {
                 double x = minValue + stepSize * i;
-                double y = this.Value.Transform(x);
+                double y = this.Value.Evaluate(x);
                 m_series.Points.AddXY(x, y);
             }
 
             Axis xAxis = chart1.ChartAreas[0].AxisX;
-            xAxis.Interval = SIZE_SCALE_SIGMA * this.Value.StdDev / 5;
+            xAxis.Interval = spreadSize / 5;
             xAxis.Minimum = minValue;
             chart1.ChartAreas[0].CursorX.Interval = xAxis.Interval / 5;
         }
