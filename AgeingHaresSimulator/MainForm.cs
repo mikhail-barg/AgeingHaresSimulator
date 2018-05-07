@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -39,6 +40,8 @@ namespace AgeingHaresSimulator
         public MainForm()
         {
             InitializeComponent();
+
+            this.Text += " v" + Assembly.GetEntryAssembly().GetName().Version;
 
             this.propertyGrid1.SelectedObject = new Settings();
 

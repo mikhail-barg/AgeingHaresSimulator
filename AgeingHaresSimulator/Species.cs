@@ -42,10 +42,17 @@ namespace AgeingHaresSimulator
             }
         }
 
-        internal static Chromosome CreateInitial(Random random, Settings settings)
+        internal static Chromosome CreateInitial(Random random, Settings settings, bool allowAgeingGene)
         {
             Chromosome chromosome = new Chromosome();
-            chromosome.ageingGene = settings.AgeingGeneInitialDistribution.Sample(random);
+            if (allowAgeingGene)
+            {
+                chromosome.ageingGene = settings.AgeingGeneInitialDistribution.Sample(random);
+            }
+            else
+            {
+                chromosome.ageingGene = 0;
+            }
             if (chromosome.ageingGene < 0)
             {
                 chromosome.ageingGene = 0;
@@ -165,10 +172,10 @@ namespace AgeingHaresSimulator
             return result;
         }
 
-        internal static Species CreateInitial(Random random, Settings settings)
+        internal static Species CreateInitial(Random random, Settings settings, bool allowAgeingGene)
         {
-            Chromosome chromosome1 = Chromosome.CreateInitial(random, settings);
-            Chromosome chromosome2 = Chromosome.CreateInitial(random, settings);
+            Chromosome chromosome1 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
+            Chromosome chromosome2 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
             Species result = new Species(chromosome1, chromosome2, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
             return result;
         }

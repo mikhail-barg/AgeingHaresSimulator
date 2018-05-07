@@ -31,6 +31,9 @@ namespace AgeingHaresSimulator
         [Category("1. Initial"), Description("Number of individuals in initial population")]
         public int InitialPopulationSize { get; set; } = 25;
 
+        [Category("1. Initial"), Description("Fraction of initial population [0..1] having no ageing genes at all. Set to e.g. 0.5 to simulate two alleles")]
+        public double InitialPopulationFractionWithoutAgeingGene{ get; set; } = 0;
+
         [Category("1. Initial"), Description("Distribution parameters for the Ageing gene value in initial population")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [Editor(typeof(NormalDistributionUiEditor), typeof(UITypeEditor))]
