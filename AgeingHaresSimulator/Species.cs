@@ -17,7 +17,7 @@ namespace AgeingHaresSimulator
         {
             if (random.ProbCheck(settings.AgeingGeneMutationParams.MutationProbability))
             {
-                this.ageingGene += this.ageingGene * settings.AgeingGeneMutationParams.Distribution.Sample(random);
+                this.ageingGene += settings.AgeingGeneMutationParams.Distribution.Sample(random);
                 if (this.ageingGene < 0)
                 {
                     this.ageingGene = 0;
@@ -30,7 +30,7 @@ namespace AgeingHaresSimulator
 
             if (random.ProbCheck(settings.CunningGeneMutationParams.MutationProbability))
             {
-                this.cunningGene += this.cunningGene * settings.CunningGeneMutationParams.Distribution.Sample(random);
+                this.cunningGene += settings.CunningGeneMutationParams.Distribution.Sample(random);
                 if (this.cunningGene < 0)
                 {
                     this.cunningGene = 0;
