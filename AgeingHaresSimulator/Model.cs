@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AgeingHaresSimulator.Common;
 
 namespace AgeingHaresSimulator
 {
@@ -53,17 +54,22 @@ namespace AgeingHaresSimulator
 
         internal Stats GetAgeingSpeedStats()
         {
-            return new Stats(m_population.Individuals.Select(item => (double)item.ageingSpeed));
+            return new Stats(m_population.Individuals.Select(item => item.ageingSpeed));
         }
 
         internal Stats GetCunningStats()
         {
-            return new Stats(m_population.Individuals.Select(item => (double)item.cunning));
+            return new Stats(m_population.Individuals.Select(item => item.cunning));
         }
 
         internal Stats GetSurvivabilityStats()
         {
             return new Stats(m_population.SurvivabilityList);
+        }
+
+        internal double GetAgeingCunningCorrelation()
+        {
+            return Utils.CalculateCorrelation(m_population.Individuals, item => item.ageingSpeed, item => item.cunning);
         }
     }
 }

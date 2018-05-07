@@ -9,12 +9,15 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using AgeingHaresSimulator.Common;
 
 namespace AgeingHaresSimulator
 {
     public partial class MainForm : Form
     {
         private CancellationTokenSource m_tokenSource;
+        private Task m_task;
+
         private readonly Series m_populationSizeSeries;
         private readonly Series m_averageAgeSeries;
 
@@ -30,6 +33,8 @@ namespace AgeingHaresSimulator
         private readonly Series m_originationRateSeries;
 
         private readonly Series m_survivabilitySeries;
+
+        private readonly Series m_ageingCunningCorrelationSeries;
 
         public MainForm()
         {
@@ -50,6 +55,8 @@ namespace AgeingHaresSimulator
             this.m_mortalityRateSeries = this.chart1.Series["Mortality rate"];
             this.m_cunningAvgSeries = this.chart1.Series["Cunning (Average)"];
             this.m_survivabilitySeries = this.chart1.Series["Survivability"];
+
+            this.m_ageingCunningCorrelationSeries = this.chart2.Series["Ageing Cunning correlation"];
         }
 
         private void openSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -126,11 +133,15 @@ namespace AgeingHaresSimulator
                 stopToolStripMenuItem.Enabled = false;
                 startToolStripMenuItem.Enabled = true;
                 m_tokenSource = null;
+                m_task = null;
             });
         }
 
         private void DisplayResults(Model model)
         {
+            double correlation = model.GetAgeingCunningCorrelation();
+            this.m_ageingCunningCorrelationSeries.Points.AddXY(model.Year, correlation);
+
             this.m_populationSizeSeries.Points.AddXY(model.Year, model.PopulationSize);
             this.m_crysisPowerSeries.Points.AddXY(model.Year, model.LastCrysisPower);
             Stats ageStats = model.GetAgeStats();
@@ -147,6 +158,10 @@ namespace AgeingHaresSimulator
             this.m_originationRateSeries.Points.AddXY(model.Year, model.RateOfOrigination);
 
             this.m_survivabilitySeries.Points.AddXY(model.Year, model.GetSurvivabilityStats().avgValue);
+
+            this.chart1.Update();
+            this.chart2.Update();
+
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
@@ -159,10 +174,15 @@ namespace AgeingHaresSimulator
                 series.Points.Clear();
             }
 
+            foreach (Series series in this.chart2.Series)
+            {
+                series.Points.Clear();
+            }
+
             m_tokenSource = new CancellationTokenSource();
             CancellationToken token = m_tokenSource.Token;
 
-            Task.Run(() => RunModel(token), token);
+            m_task = Task.Run(() => RunModel(token), token);
         }
 
         private void stopToolStripMenuItem_Click(object sender, EventArgs e)
@@ -170,5 +190,15 @@ namespace AgeingHaresSimulator
             m_tokenSource.Cancel();
         }
 
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Task task = this.m_task;
+            if (m_tokenSource != null)
+            {
+                e.Cancel = true;
+                m_tokenSource.Cancel();
+                task.ContinueWith(t => this.InvokeLambda(Close));
+            }
+        }
     }
 }

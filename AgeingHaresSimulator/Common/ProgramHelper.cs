@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using NLog;
 
-namespace AgeingHaresSimulator
+namespace AgeingHaresSimulator.Common
 {
     public static class ProgramHelper
     {

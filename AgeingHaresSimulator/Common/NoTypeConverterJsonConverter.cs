@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace AgeingHaresSimulator
+namespace AgeingHaresSimulator.Common
 {
     //see https://stackoverflow.com/questions/31325866/newtonsoft-json-cannot-convert-model-with-typeconverter-attribute#31328131
     public sealed class NoTypeConverterJsonConverter<T> : JsonConverter

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace AgeingHaresSimulator
+namespace AgeingHaresSimulator.Common
 {
     public static class Utils
     {
@@ -24,6 +24,36 @@ namespace AgeingHaresSimulator
                 list[j] = list[i];
                 list[i] = tmp;
             }
+        }
+
+        //see https://en.wikipedia.org/wiki/Pearson_correlation_coefficient#For_a_sample
+        public static double CalculateCorrelation<T>(IEnumerable<T> data, Func<T, double> xSelector, Func<T, double> ySelector)
+        {
+            int n = data.Count();
+            double xAvg = 0;
+            double yAvg = 0;
+            foreach (T item in data)
+            {
+                xAvg += xSelector(item);
+                yAvg += ySelector(item);
+            }
+            xAvg /= n;
+            yAvg /= n;
+
+            double sxx = 0;
+            double syy = 0;
+            double sxy = 0;
+            foreach (T item in data)
+            {
+                double x = xSelector(item);
+                double y = ySelector(item);
+                sxx += (x - xAvg) * (x - xAvg);
+                syy += (y - yAvg) * (y - yAvg);
+                sxy += (x - xAvg) * (y - yAvg);
+            }
+
+            double result = sxy / (Math.Sqrt(sxx) * Math.Sqrt(syy));
+            return result;
         }
     }
 

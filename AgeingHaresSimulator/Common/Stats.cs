@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AgeingHaresSimulator
+namespace AgeingHaresSimulator.Common
 {
     internal sealed class Stats
     {
