@@ -24,7 +24,7 @@ namespace AgeingHaresSimulator
             m_speciesList = new List<Species>(settings.InitialPopulationSize);
             for (int i = 0; i < settings.InitialPopulationSize; ++i)
             {
-                bool allowAgeingGene = i <= settings.InitialPopulationFractionWithoutAgeingGene * settings.InitialPopulationSize;
+                bool allowAgeingGene = i >= settings.InitialPopulationFractionWithoutAgeingGene * settings.InitialPopulationSize;
                 m_speciesList.Add(Species.CreateInitial(random, settings, allowAgeingGene));
             }
         }
