@@ -35,7 +35,7 @@ namespace AgeingHaresSimulator
                 {
                     this.cunningGene = 0;
                 }
-                if (settings.MaximalCunning > 0 && this.cunningGene > settings.MaximalCunning)
+                if (this.cunningGene > settings.MaximalCunning)
                 {
                     this.cunningGene = settings.MaximalCunning;
                 }
@@ -59,7 +59,7 @@ namespace AgeingHaresSimulator
             {
                 chromosome.cunningGene = 0;
             }
-            if (settings.MaximalCunning > 0 && chromosome.cunningGene > settings.MaximalCunning)
+            if (chromosome.cunningGene > settings.MaximalCunning)
             {
                 chromosome.cunningGene = settings.MaximalCunning;
             }

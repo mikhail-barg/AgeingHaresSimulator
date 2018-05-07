@@ -89,16 +89,16 @@ namespace AgeingHaresSimulator
         public LogisticFunction CunningToSpeedPenaltyTransformParams { get; set; } = new LogisticFunction();
         */
 
-        [Category("7. New individual"), Description("Maximum value for cunning. Set to 0 to disable limit")]
-        public double MaximalCunning { get; set; } = 0.0;
+        [Category("7. New individual"), Description("Maximum value for cunning")]
+        public double MaximalCunning { get; set; } = 7.0;
 
-        [Category("7. New individual"), Description("Cunning to speed penalty linear transform coefficient. Penalty = Cunning * Coefficient")]
-        public double CunningToSpeedPenaltyCoefficient { get; set; } = 0.0;
+        [Category("7. New individual"), Description("Cunning to speed penalty linear transform value at MaximalCunning. Penalty = Cunning / MaximalCunning * CunningToSpeedPenaltyMax")]
+        public double CunningToSpeedPenaltyMax { get; set; } = 2.0;
 
         internal double CunningToSpeedPenaltyTransform(double cunningValue)
         {
             //double penalty = this.CunningToSpeedPenaltyTransformParams.Evaluate(cunningValue);
-            double penalty = this.CunningToSpeedPenaltyCoefficient * cunningValue;
+            double penalty = cunningValue / this.MaximalCunning * CunningToSpeedPenaltyMax;
             return penalty;
         }
 
