@@ -178,7 +178,7 @@ namespace AgeingHaresSimulator
             this.speedToolStripTextBox.Text = currentSpeed.ToString("N2") + " years/s";
 
             double correlation = model.GetAgeingCunningCorrelation();
-            //this.m_ageingCunningCorrelationSeries.Points.AddXY(model.Year, correlation);
+            this.m_ageingCunningCorrelationSeries.Points.AddXY(model.Year, correlation);
 
             this.m_populationSizeSeries.Points.AddXY(model.Year, model.PopulationSize);
             this.m_crysisPowerSeries.Points.AddXY(model.Year, model.LastCrysisPower);
