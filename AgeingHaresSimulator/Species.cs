@@ -137,32 +137,39 @@ namespace AgeingHaresSimulator
             }
         }
 
-        public Chromosome SelectChromosomeForOffspring(Random random, double crossoverProbability)
+        public Chromosome SelectChromosomeForOffspring(Random random, Settings settings)
         {
-            Chromosome result, other;
-            if (random.ProbCheck(0.5))
+            if (settings.SexualReproduction)
             {
-                result = this.chromosome1;
-                other = this.chromosome2;
+                Chromosome result, other;
+                if (random.ProbCheck(0.5))
+                {
+                    result = this.chromosome1;
+                    other = this.chromosome2;
+                }
+                else
+                {
+                    result = this.chromosome2;
+                    other = this.chromosome1;
+                }
+
+                if (random.ProbCheck(settings.CrossoverProbability))
+                {
+                    result.ageingGene = other.ageingGene;
+                }
+
+                return result;
             }
             else
             {
-                result = this.chromosome2;
-                other = this.chromosome1;
+                return this.chromosome1;
             }
-
-            if (random.ProbCheck(crossoverProbability))
-            {
-                result.ageingGene = other.ageingGene;
-            }
-
-            return result;
         }
 
-        internal static Species CreateOffspring(Species parent1, Species parent2, Random random, Settings settings)
+        internal static Species CreateOffspringSex(Species parent1, Species parent2, Random random, Settings settings)
         {
-            Chromosome chromosome1 = parent1.SelectChromosomeForOffspring(random, settings.CrossoverProbability);
-            Chromosome chromosome2 = parent2.SelectChromosomeForOffspring(random, settings.CrossoverProbability);
+            Chromosome chromosome1 = parent1.SelectChromosomeForOffspring(random, settings);
+            Chromosome chromosome2 = parent2.SelectChromosomeForOffspring(random, settings);
 
             chromosome1.ApplyMutations(random, settings);
             chromosome2.ApplyMutations(random, settings);
@@ -172,12 +179,32 @@ namespace AgeingHaresSimulator
             return result;
         }
 
+        internal static Species CreateOffspringReplication(Species parent, Random random, Settings settings)
+        {
+            Chromosome chromosome1 = parent.SelectChromosomeForOffspring(random, settings);
+            chromosome1.ApplyMutations(random, settings);
+            
+
+            Species result = new Species(chromosome1, chromosome1, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
+
+            return result;
+        }
+
         internal static Species CreateInitial(Random random, Settings settings, bool allowAgeingGene)
         {
-            Chromosome chromosome1 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
-            Chromosome chromosome2 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
-            Species result = new Species(chromosome1, chromosome2, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
-            return result;
+            if (settings.SexualReproduction)
+            {
+                Chromosome chromosome1 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
+                Chromosome chromosome2 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
+                Species result = new Species(chromosome1, chromosome2, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
+                return result;
+            }
+            else
+            {
+                Chromosome chromosome1 = Chromosome.CreateInitial(random, settings, allowAgeingGene);
+                Species result = new Species(chromosome1, chromosome1, settings.InitialSpeed, settings.CunningToSpeedPenaltyTransform);
+                return result;
+            }
         }
     }
 

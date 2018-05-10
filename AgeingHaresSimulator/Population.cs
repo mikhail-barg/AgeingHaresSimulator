@@ -81,22 +81,33 @@ namespace AgeingHaresSimulator
                     parents.Add(species);
                 }
             }
-            random.Shuffle(parents);
 
             List<Species> offsprings = new List<Species>();
-            if (parents.Count > 1)
+            if (settings.SexualReproduction)
             {
-                for (int i = 0; i < parents.Count; i += 2)
+                random.Shuffle(parents);
+                if (parents.Count > 1)
                 {
-                    Species parent1 = parents[i];
-                    int j = i + 1;
-                    if (j >= parents.Count)
+                    for (int i = 0; i < parents.Count; i += 2)
                     {
-                        j = 0;
-                    }
-                    Species parent2 = parents[j];
+                        Species parent1 = parents[i];
+                        int j = i + 1;
+                        if (j >= parents.Count)
+                        {
+                            j = 0;
+                        }
+                        Species parent2 = parents[j];
 
-                    Species offspring = Species.CreateOffspring(parent1, parent2, random, settings);
+                        Species offspring = Species.CreateOffspringSex(parent1, parent2, random, settings);
+                        offsprings.Add(offspring);
+                    }
+                }
+            }
+            else
+            {
+                foreach (Species parent in parents)
+                {
+                    Species offspring = Species.CreateOffspringReplication(parent, random, settings);
                     offsprings.Add(offspring);
                 }
             }

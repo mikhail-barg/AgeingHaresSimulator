@@ -26,7 +26,7 @@ namespace AgeingHaresSimulator
         }
 
         [JsonProperty()]
-        private decimal SettingsVersion { get; } = 1.2m;
+        private decimal SettingsVersion { get; } = 1.3m;
 
         [Category("1. Initial"), Description("Number of individuals in initial population")]
         public int InitialPopulationSize { get; set; } = 25;
@@ -69,6 +69,9 @@ namespace AgeingHaresSimulator
         [Editor(typeof(LogisticFunctionUiEditor), typeof(UITypeEditor))]
         public LogisticFunction PopulationSizeToMatingProbabilityTransformParams { get; set; } = new LogisticFunction();
 
+
+        [Category("6. Sex"), Description("Set to True to make individuals have two chromosomes and use sexual reproduction. When set to False, only a single chromosome would be predent in each individual, and offsprings would be created by replicating parents. Note that Sex means that each two mating individuals would produce a single offspring, while in Replication each individual would produce an offspring, so adjust PopulationSizeToMatingProbabilityTransformParams accordingly")]
+        public bool SexualReproduction { get; set; } = true;
 
         [Category("6. Sex"), Description("Probability of taking second gene from another allele [0 - 0.5]. 0 means no crossover, i.e. genes are linked and always inhereted together")]
         public double CrossoverProbability { get; set; } = 0;
