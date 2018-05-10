@@ -19,6 +19,7 @@ namespace AgeingHaresSimulator
         internal double RateOfOrigination => m_population.RateOfOrigination;
         internal double MortalityRate => m_population.MortalityRate;
 
+        internal Settings settings => m_settings;
 
         internal Model(Settings settings)
         {

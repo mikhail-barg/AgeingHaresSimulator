@@ -37,6 +37,8 @@ namespace AgeingHaresSimulator
 
         private readonly Series m_ageingCunningCorrelationSeries;
 
+        private readonly List<Series> m_allSeries;
+
         public MainForm()
         {
             InitializeComponent();
@@ -60,6 +62,24 @@ namespace AgeingHaresSimulator
             this.m_survivabilitySeries = this.chart1.Series["Survivability"];
 
             this.m_ageingCunningCorrelationSeries = this.chart2.Series["Ageing Cunning correlation"];
+
+            m_allSeries = new List<Series>() {
+                this.m_populationSizeSeries,
+                this.m_averageAgeSeries,
+                this.m_ageingSpeedAvgSeries,
+                this.m_ageingSpeedMedianSeries,
+                this.m_ageingSpeedQ1Series,
+                this.m_ageingSpeedQ3Series,
+
+                this.m_crysisPowerSeries,
+
+                this.m_originationRateSeries,
+                this.m_mortalityRateSeries,
+                this.m_cunningAvgSeries,
+                this.m_survivabilitySeries,
+
+                this.m_ageingCunningCorrelationSeries
+            };
         }
 
         private void openSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -111,19 +131,32 @@ namespace AgeingHaresSimulator
         }
 
         private const int DISPLAY_YEAR = 1;
+        private const int SPEED_COUNT_YEAR = 50;
 
         private void RunModel(CancellationToken token)
         {
             Settings settings = (Settings)this.propertyGrid1.SelectedObject;
             Model model = new Model(settings);
-            this.InvokeLambda(() => DisplayResults(model));
+
+            DateTime startTime = DateTime.Now;
+            double currentSpeed = 0.0;
+
+
+            this.InvokeLambda(() => DisplayResults(model, currentSpeed));
 
             while (!token.IsCancellationRequested)
             {
                 model.NextYear();
+                if (model.Year % SPEED_COUNT_YEAR == 0)
+                {
+                    DateTime now = DateTime.Now;
+                    currentSpeed = SPEED_COUNT_YEAR / (now - startTime).TotalSeconds;
+                    startTime = now;
+                }
+
                 if (model.Year % DISPLAY_YEAR == 0 || model.PopulationSize == 0)
                 {
-                    this.InvokeLambda(() => DisplayResults(model));
+                    this.InvokeLambda(() => DisplayResults(model, currentSpeed));
                 }
                 
                 if (model.PopulationSize == 0)
@@ -140,10 +173,12 @@ namespace AgeingHaresSimulator
             });
         }
 
-        private void DisplayResults(Model model)
+        private void DisplayResults(Model model, double currentSpeed)
         {
+            this.speedToolStripTextBox.Text = currentSpeed.ToString("N2") + " years/s";
+
             double correlation = model.GetAgeingCunningCorrelation();
-            this.m_ageingCunningCorrelationSeries.Points.AddXY(model.Year, correlation);
+            //this.m_ageingCunningCorrelationSeries.Points.AddXY(model.Year, correlation);
 
             this.m_populationSizeSeries.Points.AddXY(model.Year, model.PopulationSize);
             this.m_crysisPowerSeries.Points.AddXY(model.Year, model.LastCrysisPower);
@@ -162,9 +197,22 @@ namespace AgeingHaresSimulator
 
             this.m_survivabilitySeries.Points.AddXY(model.Year, model.GetSurvivabilityStats().avgValue);
 
+            if (model.settings.MaximumYearsToDisplay > 0)
+            {
+                foreach (Series series in m_allSeries)
+                {
+                    while (series.Points.Count > model.settings.MaximumYearsToDisplay)
+                    {
+                        series.Points.RemoveAt(0);
+                    }
+                }
+                this.chart1.ResetAutoValues();
+                this.chart2.ResetAutoValues();
+            }
+
+            
             this.chart1.Update();
             this.chart2.Update();
-
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)

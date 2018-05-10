@@ -26,7 +26,7 @@ namespace AgeingHaresSimulator
         }
 
         [JsonProperty()]
-        private decimal SettingsVersion { get; } = 1.1m;
+        private decimal SettingsVersion { get; } = 1.2m;
 
         [Category("1. Initial"), Description("Number of individuals in initial population")]
         public int InitialPopulationSize { get; set; } = 25;
@@ -97,6 +97,11 @@ namespace AgeingHaresSimulator
 
         [Category("7. New individual"), Description("Cunning to speed penalty linear transform value at MaximalCunning. Penalty = Cunning / MaximalCunning * CunningToSpeedPenaltyMax")]
         public double CunningToSpeedPenaltyMax { get; set; } = 2.0;
+
+
+        [Category("X. Display"), Description("Maximal number of last years to display in charts. Earlier years are not displayed. Set to 0 to disable and always display all data")]
+        public int MaximumYearsToDisplay { get; set; } = 200;
+
 
         internal double CunningToSpeedPenaltyTransform(double cunningValue)
         {
