@@ -91,7 +91,7 @@ namespace AgeingHaresSimulator
         {
             string directory = "_run";
             Directory.CreateDirectory(directory);
-            string fileName = Path.Combine(directory, DateTime.Now.ToString("yyyyMMdd_hhmmss_ffff"));
+            string fileName = Path.Combine(directory, DateTime.Now.ToString("yyyyMMdd_HHmmss_ffff"));
 
             Settings settings = (Settings)this.propertyGrid1.SelectedObject;
             settings.SaveToFile(fileName + "_settings.json");
