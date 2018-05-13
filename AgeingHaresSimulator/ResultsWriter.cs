@@ -9,7 +9,7 @@ using CsvHelper;
 
 namespace AgeingHaresSimulator
 {
-    internal sealed class ResultsWriter
+    internal sealed class ResultsWriter : IDisposable
     {
         private static readonly CsvHelper.Configuration.Configuration s_csvConfiguration = new CsvHelper.Configuration.Configuration();
 
@@ -40,6 +40,32 @@ namespace AgeingHaresSimulator
             {
                 csv.WriteRecords(resultsList);
             }
+        }
+
+        private readonly Stream m_stream;
+        private readonly StreamWriter m_writer;
+        private readonly CsvWriter m_csvWriter;
+
+        public ResultsWriter(string fileName)
+        {
+            m_stream = File.OpenWrite(fileName);
+            m_writer = new StreamWriter(m_stream);
+            m_csvWriter = new CsvWriter(m_writer, s_csvConfiguration);
+            m_csvWriter.WriteHeader<YearResults>();
+            m_csvWriter.NextRecord();
+        }
+
+        public void Write(YearResults results)
+        {
+            m_csvWriter.WriteRecord(results);
+            m_csvWriter.NextRecord();
+        }
+
+        public void Dispose()
+        {
+            m_csvWriter.Dispose();
+            m_writer.Dispose();
+            m_stream.Dispose();
         }
     }
 }

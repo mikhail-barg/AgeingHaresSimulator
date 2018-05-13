@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -21,6 +22,8 @@ namespace AgeingHaresSimulator
 
         private readonly Dictionary<string, Series> m_allSeries;
         private readonly List<YearResults> m_currentResults = new List<YearResults>();
+
+        private ResultsWriter m_resultsWriter;
 
         public MainForm()
         {
@@ -86,36 +89,48 @@ namespace AgeingHaresSimulator
 
         private void RunModel(CancellationToken token)
         {
+            string directory = "_run";
+            Directory.CreateDirectory(directory);
+            string fileName = Path.Combine(directory, DateTime.Now.ToString("yyyyMMdd_hhmmss_ffff"));
+
             Settings settings = (Settings)this.propertyGrid1.SelectedObject;
+            settings.SaveToFile(fileName + "_settings.json");
+
             Model model = new Model(settings);
-            m_currentResults.Clear();
 
-            DateTime startTime = DateTime.Now;
-            double currentSpeed = 0.0;
-
-
-            this.InvokeLambda(() => DisplayResults(model, currentSpeed, false));
-
-            while (!token.IsCancellationRequested)
+            using (m_resultsWriter = new ResultsWriter(fileName + ".csv"))
             {
-                model.NextYear();
-                if (model.Year % SPEED_COUNT_YEAR == 0)
-                {
-                    DateTime now = DateTime.Now;
-                    currentSpeed = SPEED_COUNT_YEAR / (now - startTime).TotalSeconds;
-                    startTime = now;
-                }
 
-                if (model.Year % DISPLAY_YEAR == 0 || model.PopulationSize == 0)
+                m_currentResults.Clear();
+
+                DateTime startTime = DateTime.Now;
+                double currentSpeed = 0.0;
+
+
+                this.InvokeLambda(() => DisplayResults(model, currentSpeed, false));
+
+                while (!token.IsCancellationRequested)
                 {
-                    this.InvokeLambda(() => DisplayResults(model, currentSpeed, token.IsCancellationRequested));
-                }
-                
-                if (model.PopulationSize == 0)
-                {
-                    break;
+                    model.NextYear();
+                    if (model.Year % SPEED_COUNT_YEAR == 0)
+                    {
+                        DateTime now = DateTime.Now;
+                        currentSpeed = SPEED_COUNT_YEAR / (now - startTime).TotalSeconds;
+                        startTime = now;
+                    }
+
+                    if (model.Year % DISPLAY_YEAR == 0 || model.PopulationSize == 0)
+                    {
+                        this.InvokeLambda(() => DisplayResults(model, currentSpeed, token.IsCancellationRequested));
+                    }
+
+                    if (model.PopulationSize == 0)
+                    {
+                        break;
+                    }
                 }
             }
+            
 
             this.InvokeLambda(() => {
                 stopToolStripMenuItem.Enabled = false;
@@ -127,6 +142,7 @@ namespace AgeingHaresSimulator
 
         private void DisplayResults(Model model, double currentSpeed, bool isFinal)
         {
+            //add current results
             {
                 YearResults results = model.GetYearResults();
                 m_currentResults.Add(results);
@@ -142,6 +158,7 @@ namespace AgeingHaresSimulator
             foreach (YearResults results in m_currentResults)
             {
                 results.ChartData(m_allSeries);
+                m_resultsWriter.Write(results);
             }
             m_currentResults.Clear();
 
