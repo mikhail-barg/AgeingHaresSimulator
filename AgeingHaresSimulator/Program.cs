@@ -16,10 +16,13 @@ namespace AgeingHaresSimulator
         [STAThread]
         static void Main()
         {
+
             ProgramHelper.MainWrapper(() => {
                 CultureInfo culture = CultureInfo.InvariantCulture;
                 CultureInfo.DefaultThreadCurrentCulture = culture;
                 CultureInfo.DefaultThreadCurrentUICulture = culture;
+
+                ResultsWriter.WriteAll("test.csv", new List<YearResults>() { new YearResults() });
 
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);

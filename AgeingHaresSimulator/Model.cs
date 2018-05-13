@@ -15,7 +15,7 @@ namespace AgeingHaresSimulator
 
         internal int Year => m_population.Year;
         internal int PopulationSize => m_population.Size;
-        internal double LastCrysisPower { get; private set; }
+        internal double CrysisPower { get; private set; }
         internal double RateOfOrigination => m_population.RateOfOrigination;
         internal double MortalityRate => m_population.MortalityRate;
 
@@ -25,7 +25,7 @@ namespace AgeingHaresSimulator
         {
             this.m_settings = settings;
             this.m_population = new Population(m_random, m_settings);
-            this.LastCrysisPower = 0.0;
+            this.CrysisPower = 0.0;
         }
 
         internal void NextYear()
@@ -44,33 +44,27 @@ namespace AgeingHaresSimulator
                     crysisPower = 1;
                 }
             }
-            this.LastCrysisPower = crysisPower;
+            this.CrysisPower = crysisPower;
             this.m_population.NextYear(crysisPower, m_random, m_settings);
         }
 
-        internal Stats GetAgeStats()
+        
+        internal YearResults GetYearResults()
         {
-            return new Stats(m_population.Individuals.Select(item => (double)item.age));
-        }
+            YearResults results = new YearResults() {
+                Year = this.Year,
+                AgeingCunningCorrelation = Utils.CalculateCorrelation(m_population.Individuals, item => item.ageingSpeed, item => item.cunning),
+                PopulationSize = this.PopulationSize,
+                CrysisPower = this.CrysisPower,
+                AgeingSpeedStats = new Stats(m_population.Individuals.Select(item => item.ageingSpeed)),
+                AgeStats = new Stats(m_population.Individuals.Select(item => (double)item.age)),
+                CunningStats = new Stats(m_population.Individuals.Select(item => item.cunning)),
+                MortalityRate = this.MortalityRate,
+                RateOfOrigination = this.RateOfOrigination,
+                SurvivabilityStats = new Stats(m_population.SurvivabilityList)
+            };
 
-        internal Stats GetAgeingSpeedStats()
-        {
-            return new Stats(m_population.Individuals.Select(item => item.ageingSpeed));
-        }
-
-        internal Stats GetCunningStats()
-        {
-            return new Stats(m_population.Individuals.Select(item => item.cunning));
-        }
-
-        internal Stats GetSurvivabilityStats()
-        {
-            return new Stats(m_population.SurvivabilityList);
-        }
-
-        internal double GetAgeingCunningCorrelation()
-        {
-            return Utils.CalculateCorrelation(m_population.Individuals, item => item.ageingSpeed, item => item.cunning);
+            return results;
         }
     }
 }

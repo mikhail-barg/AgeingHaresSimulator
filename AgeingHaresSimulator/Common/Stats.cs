@@ -6,14 +6,17 @@ using System.Threading.Tasks;
 
 namespace AgeingHaresSimulator.Common
 {
-    internal sealed class Stats
+    public sealed class Stats
     {
-        internal readonly double minValue;
-        internal readonly double maxValue;
-        internal readonly double avgValue;
-        internal readonly double medianValue;
-        internal readonly double q1Value;
-        internal readonly double q3Value;
+        public double minValue { get; set; }
+        public double maxValue { get; set; }
+        public double avgValue { get; set; }
+        public double medianValue { get; set; }
+        public double q1Value { get; set; }
+        public double q3Value { get; set; }
+
+        //Used by CsvHelper
+        public Stats() { }
 
         internal Stats(IEnumerable<double> source)
         {

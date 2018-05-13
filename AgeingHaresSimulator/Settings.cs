@@ -104,7 +104,8 @@ namespace AgeingHaresSimulator
 
         [Category("X. Display"), Description("Maximal number of last years to display in charts. Earlier years are not displayed. Set to 0 to disable and always display all data")]
         public int MaximumYearsToDisplay { get; set; } = 200;
-
+        [Category("X. Display"), Description("Number fo years to simulate before updatingchart. No years data is skipped, but simulation should go faster")]
+        public int DisplayWaitPeriod { get; set; } = 10;
 
         internal double CunningToSpeedPenaltyTransform(double cunningValue)
         {
