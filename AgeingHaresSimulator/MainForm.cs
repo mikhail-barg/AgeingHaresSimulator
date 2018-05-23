@@ -34,6 +34,8 @@ namespace AgeingHaresSimulator
             this.propertyGrid1.SelectedObject = new Settings();
 
             m_allSeries = chart1.Series.Union(chart2.Series).ToDictionary(item => item.Name);
+
+            writeToFileToolStripMenuItem.Checked = AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile;
         }
 
         private void openSettingsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -94,43 +96,52 @@ namespace AgeingHaresSimulator
             string fileName = Path.Combine(directory, DateTime.Now.ToString("yyyyMMdd_HHmmss_ffff"));
 
             Settings settings = (Settings)this.propertyGrid1.SelectedObject;
-            settings.SaveToFile(fileName + "_settings.json");
-
             Model model = new Model(settings);
 
-            using (m_resultsWriter = new ResultsWriter(fileName + ".csv"))
+            if (AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile)
             {
+                settings.SaveToFile(fileName + "_settings.json");
+                m_resultsWriter = new ResultsWriter(fileName + ".csv");
+            }
+            else
+            {
+                m_resultsWriter = null;
+            }
 
-                m_currentResults.Clear();
+            m_currentResults.Clear();
 
-                DateTime startTime = DateTime.Now;
-                double currentSpeed = 0.0;
+            DateTime startTime = DateTime.Now;
+            double currentSpeed = 0.0;
 
 
-                this.InvokeLambda(() => DisplayResults(model, currentSpeed, false));
+            this.InvokeLambda(() => DisplayResults(model, currentSpeed, false));
 
-                while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested)
+            {
+                model.NextYear();
+                if (model.Year % SPEED_COUNT_YEAR == 0)
                 {
-                    model.NextYear();
-                    if (model.Year % SPEED_COUNT_YEAR == 0)
-                    {
-                        DateTime now = DateTime.Now;
-                        currentSpeed = SPEED_COUNT_YEAR / (now - startTime).TotalSeconds;
-                        startTime = now;
-                    }
+                    DateTime now = DateTime.Now;
+                    currentSpeed = SPEED_COUNT_YEAR / (now - startTime).TotalSeconds;
+                    startTime = now;
+                }
 
-                    if (model.Year % DISPLAY_YEAR == 0 || model.PopulationSize == 0)
-                    {
-                        this.InvokeLambda(() => DisplayResults(model, currentSpeed, token.IsCancellationRequested));
-                    }
+                if (model.Year % DISPLAY_YEAR == 0 || model.PopulationSize == 0)
+                {
+                    this.InvokeLambda(() => DisplayResults(model, currentSpeed, token.IsCancellationRequested));
+                }
 
-                    if (model.PopulationSize == 0)
-                    {
-                        break;
-                    }
+                if (model.PopulationSize == 0)
+                {
+                    break;
                 }
             }
-            
+
+            if (m_resultsWriter != null)
+            {
+                m_resultsWriter.Dispose();
+                m_resultsWriter = null;
+            }
 
             this.InvokeLambda(() => {
                 stopToolStripMenuItem.Enabled = false;
@@ -158,7 +169,10 @@ namespace AgeingHaresSimulator
             foreach (YearResults results in m_currentResults)
             {
                 results.ChartData(m_allSeries);
-                m_resultsWriter.Write(results);
+                if (m_resultsWriter != null)
+                { 
+                    m_resultsWriter.Write(results);
+                }
             }
             m_currentResults.Clear();
 
@@ -216,6 +230,12 @@ namespace AgeingHaresSimulator
                 m_tokenSource.Cancel();
                 task.ContinueWith(t => this.InvokeLambda(Close));
             }
+        }
+
+        private void writeToFileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile = !AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile;
+            writeToFileToolStripMenuItem.Checked = AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile;
         }
     }
 }
