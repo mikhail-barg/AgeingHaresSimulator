@@ -58,10 +58,12 @@ namespace AgeingHaresSimulator
                 CrysisPower = this.CrysisPower,
                 AgeingSpeedStats = new Stats(m_population.Individuals.Select(item => item.ageingSpeed)),
                 AgeStats = new Stats(m_population.Individuals.Select(item => (double)item.age)),
+                AgeAtDeathStats = m_population.AgeAtDeathStats,
                 CunningStats = new Stats(m_population.Individuals.Select(item => item.cunning)),
                 MortalityRate = this.MortalityRate,
                 RateOfOrigination = this.RateOfOrigination,
-                SurvivabilityStats = new Stats(m_population.SurvivabilityList)
+                SurvivabilityStats = m_population.SurvivabilityStats,
+                SurvivabilityByAge = m_population.SurvivabilityByAgeStats
             };
 
             return results;

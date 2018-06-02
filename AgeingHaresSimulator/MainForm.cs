@@ -33,7 +33,10 @@ namespace AgeingHaresSimulator
 
             this.propertyGrid1.SelectedObject = new Settings();
 
-            m_allSeries = chart1.Series.Union(chart2.Series).ToDictionary(item => item.Name);
+            m_allSeries = chart1.Series
+                .Union(chart2.Series)
+                .Union(chart3.Series)
+                .ToDictionary(item => item.Name);
 
             writeToFileToolStripMenuItem.Checked = AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile;
         }
@@ -166,9 +169,10 @@ namespace AgeingHaresSimulator
 
             this.speedToolStripTextBox.Text = currentSpeed.ToString("N2") + " years/s";
 
-            foreach (YearResults results in m_currentResults)
+            for (int i = 0; i < m_currentResults.Count; ++i)
             {
-                results.ChartData(m_allSeries);
+                YearResults results = m_currentResults[i];
+                results.ChartData(m_allSeries, i == m_currentResults.Count - 1);
                 if (m_resultsWriter != null)
                 { 
                     m_resultsWriter.Write(results);
@@ -188,11 +192,13 @@ namespace AgeingHaresSimulator
                 }
                 this.chart1.ResetAutoValues();
                 this.chart2.ResetAutoValues();
+                //this.chart3.ResetAutoValues();
             }
 
             
             this.chart1.Update();
             this.chart2.Update();
+            this.chart3.Update();
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)
@@ -200,12 +206,7 @@ namespace AgeingHaresSimulator
             this.startToolStripMenuItem.Enabled = false;
             this.stopToolStripMenuItem.Enabled = true;
 
-            foreach (Series series in this.chart1.Series)
-            {
-                series.Points.Clear();
-            }
-
-            foreach (Series series in this.chart2.Series)
+            foreach (Series series in this.m_allSeries.Values)
             {
                 series.Points.Clear();
             }

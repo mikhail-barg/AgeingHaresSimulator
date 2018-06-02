@@ -21,21 +21,44 @@ namespace AgeingHaresSimulator
         public double MortalityRate { get; set; }
         public double RateOfOrigination { get; set; }
         public Stats SurvivabilityStats { get; set; }
+        public Stats AgeAtDeathStats { get; set; }
+        public Stats2D SurvivabilityByAge { get; set; }
 
-        internal void ChartData(Dictionary<string, Series> charts)
+        internal void ChartData(Dictionary<string, Series> series, bool isCurrentlyLast)
         {
-            charts["Ageing Cunning correlation"].Points.AddXY(Year, AgeingCunningCorrelation);
-            charts["Population size"].Points.AddXY(Year, PopulationSize);
-            charts["Crysis power"].Points.AddXY(Year, CrysisPower);
+            series["Ageing Cunning correlation"].Points.AddXY(Year, AgeingCunningCorrelation);
+            series["Population size"].Points.AddXY(Year, PopulationSize);
+            series["Crysis power"].Points.AddXY(Year, CrysisPower);
 
-            charts["Average age"].Points.AddXY(Year, AgeStats.avgValue);
-            charts["Ageing speed (Average)"].Points.AddXY(Year, AgeingSpeedStats.avgValue);
-            charts["Cunning (Average)"].Points.AddXY(Year, CunningStats.avgValue);
+            series["Average age"].Points.AddXY(Year, AgeStats.avgValue);
+            series["Avg. age at death"].Points.AddXY(Year, AgeAtDeathStats.avgValue);
 
-            charts["Mortality rate"].Points.AddXY(Year, MortalityRate);
-            charts["Rate of origination"].Points.AddXY(Year, RateOfOrigination);
+            series["Ageing speed (Average)"].Points.AddXY(Year, AgeingSpeedStats.avgValue);
+            series["Cunning (Average)"].Points.AddXY(Year, CunningStats.avgValue);
 
-            charts["Survivability"].Points.AddXY(Year, SurvivabilityStats.avgValue);
+            series["Mortality rate"].Points.AddXY(Year, MortalityRate);
+            series["Rate of origination"].Points.AddXY(Year, RateOfOrigination);
+
+            series["Survivability"].Points.AddXY(Year, SurvivabilityStats.avgValue);
+
+            if (isCurrentlyLast)
+            {
+                Series avgSeries = series["Avg. Survivability by Age"];
+                Series statsSeries = series["Survivability by Age Stats"];
+                Series countSeries = series["Individuals count by Age"];
+                avgSeries.Points.Clear();
+                statsSeries.Points.Clear();
+                countSeries.Points.Clear();
+                foreach (Stats2D.Bucket bucket in SurvivabilityByAge.yBuckets)
+                {
+                    if (bucket.stats.count > 0)
+                    {
+                        avgSeries.Points.AddXY(bucket.minXValue, bucket.stats.avgValue);
+                        //statsSeries.Points.AddXY(bucket.minXValue, bucket.stats.maxValue, bucket.stats.minValue, bucket.stats.q1Value, bucket.stats.q3Value);
+                        countSeries.Points.AddXY(bucket.minXValue, bucket.stats.count);
+                    }
+                }
+            }
         }
     }
 }

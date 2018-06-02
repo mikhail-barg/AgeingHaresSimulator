@@ -71,6 +71,8 @@
   <ItemGroup>
     <Compile Include="Common\LogisticFunction.cs" />
     <Compile Include="Common\NormalDistribution.cs" />
+    <Compile Include="Common\Stats2D.cs" />
+    <Compile Include="Common\StatsExtensions.cs" />
     <Compile Include="Common\UI\LogisticFunctionUiEditor.cs" />
     <Compile Include="Common\UI\LogisticFunctionEditorForm.cs">
       <SubType>Form</SubType>

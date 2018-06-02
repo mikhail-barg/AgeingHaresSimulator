@@ -14,7 +14,9 @@ namespace AgeingHaresSimulator
         internal IEnumerable<Species> Individuals => m_speciesList;
         internal double RateOfOrigination { get; private set; }
         internal double MortalityRate { get; private set; }
-        internal List<double> SurvivabilityList = new List<double>();
+        internal Stats SurvivabilityStats = new Stats(new List<double>());
+        internal Stats AgeAtDeathStats = new Stats(new List<double>());
+        internal Stats2D SurvivabilityByAgeStats = new Stats2D(0, 0, 0, null);
 
         private List<Species> m_speciesList;
 
@@ -39,16 +41,27 @@ namespace AgeingHaresSimulator
 
         private void Selection(double crysisPower, Random random, Settings settings)
         {
-            this.SurvivabilityList = new List<double>();
+            List<Tuple<double, double>> survivabilityByAge =  new List<Tuple<double, double>>();
+
             List<Species> survivors = new List<Species>(this.m_speciesList.Count);
+            List<Species> victims = new List<Species>(this.m_speciesList.Count);
+            int maxAge = 0;
             foreach (Species species in this.m_speciesList)
             {
                 double survivability;
                 double survivalProbability = species.GetSurvivalProbability(crysisPower, settings.SurvivabilityToSurvivalProbabilityTransfrom, out survivability);
-                this.SurvivabilityList.Add(survivability);
+                survivabilityByAge.Add(Tuple.Create((double)species.age, survivability));
                 if (random.ProbCheck(survivalProbability))
                 {
                     survivors.Add(species);
+                }
+                else
+                {
+                    victims.Add(species);
+                }
+                if (species.age > maxAge)
+                {
+                    maxAge = species.age;
                 }
             }
             if (m_speciesList.Count > 0)
@@ -60,6 +73,9 @@ namespace AgeingHaresSimulator
                 this.MortalityRate = 0;
             }
             this.m_speciesList = survivors;
+            this.SurvivabilityStats = new Stats(survivabilityByAge.Select(item => item.Item2));
+            this.AgeAtDeathStats = new Stats(victims.Select(item => (double)item.age));
+            this.SurvivabilityByAgeStats = new Stats2D(0, maxAge, 1, survivabilityByAge);
         }
 
         private void Ageing(Settings settings)

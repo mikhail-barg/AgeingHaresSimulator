@@ -8,12 +8,14 @@ namespace AgeingHaresSimulator.Common
 {
     public sealed class Stats
     {
+        public int count { get; set; }
         public double minValue { get; set; }
         public double maxValue { get; set; }
         public double avgValue { get; set; }
         public double medianValue { get; set; }
         public double q1Value { get; set; }
         public double q3Value { get; set; }
+        public double stdDev { get; set; }
 
         //Used by CsvHelper
         public Stats() { }
@@ -21,15 +23,17 @@ namespace AgeingHaresSimulator.Common
         internal Stats(IEnumerable<double> source)
         {
             List<double> data = source.ToList();
-            if (data.Count > 0)
+            count = data.Count;
+            if (count > 0)
             {
                 data.Sort();
                 minValue = data[0];
-                maxValue = data[data.Count - 1];
-                medianValue = data[data.Count / 2];
-                q1Value = data[data.Count / 4];
-                q3Value = data[data.Count * 3 / 4];
+                maxValue = data[count - 1];
+                medianValue = data[count / 2];
+                q1Value = data[count / 4];
+                q3Value = data[count * 3 / 4];
                 avgValue = data.Average();
+                stdDev = Math.Sqrt(data.Sum(item => (avgValue - item) * (avgValue - item)) / (count > 1 ? count : 1));
             }
             else
             {
@@ -39,6 +43,7 @@ namespace AgeingHaresSimulator.Common
                 q1Value = 0;
                 q3Value = 0;
                 avgValue = 0;
+                stdDev = 0;
             }
         }
     }
