@@ -63,7 +63,8 @@ namespace AgeingHaresSimulator
                 MortalityRate = this.MortalityRate,
                 RateOfOrigination = this.RateOfOrigination,
                 SurvivabilityStats = m_population.SurvivabilityStats,
-                SurvivabilityByAge = m_population.SurvivabilityByAgeStats
+                SurvivabilityByAge = m_population.SurvivabilityByAgeStats,
+                CunningHistogramm = m_population.CunningHistogramm
             };
 
             return results;

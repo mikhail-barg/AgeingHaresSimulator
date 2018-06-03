@@ -36,6 +36,7 @@ namespace AgeingHaresSimulator
             m_allSeries = chart1.Series
                 .Union(chart2.Series)
                 .Union(chart3.Series)
+                .Union(chart4.Series)
                 .ToDictionary(item => item.Name);
 
             writeToFileToolStripMenuItem.Checked = AgeingHaresSimulator.Properties.Settings.Default.SaveStatsFile;
@@ -199,6 +200,7 @@ namespace AgeingHaresSimulator
             this.chart1.Update();
             this.chart2.Update();
             this.chart3.Update();
+            this.chart4.Update();
         }
 
         private void startToolStripMenuItem_Click(object sender, EventArgs e)

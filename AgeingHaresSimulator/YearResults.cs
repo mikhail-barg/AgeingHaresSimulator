@@ -23,6 +23,7 @@ namespace AgeingHaresSimulator
         public Stats SurvivabilityStats { get; set; }
         public Stats AgeAtDeathStats { get; set; }
         public Stats2D SurvivabilityByAge { get; set; }
+        public Stats2D CunningHistogramm { get; set; }
 
         internal void ChartData(Dictionary<string, Series> series, bool isCurrentlyLast)
         {
@@ -43,19 +44,33 @@ namespace AgeingHaresSimulator
 
             if (isCurrentlyLast)
             {
-                Series avgSeries = series["Avg. Survivability by Age"];
-                Series statsSeries = series["Survivability by Age Stats"];
-                Series countSeries = series["Individuals count by Age"];
-                avgSeries.Points.Clear();
-                statsSeries.Points.Clear();
-                countSeries.Points.Clear();
-                foreach (Stats2D.Bucket bucket in SurvivabilityByAge.yBuckets)
                 {
-                    if (bucket.stats.count > 0)
+                    Series avgSeries = series["Avg. Survivability by Age"];
+                    Series statsSeries = series["Survivability by Age Stats"];
+                    Series countSeries = series["Individuals count by Age"];
+                    avgSeries.Points.Clear();
+                    statsSeries.Points.Clear();
+                    countSeries.Points.Clear();
+                    foreach (Stats2D.Bucket bucket in SurvivabilityByAge.yBuckets)
                     {
-                        avgSeries.Points.AddXY(bucket.minXValue, bucket.stats.avgValue);
-                        //statsSeries.Points.AddXY(bucket.minXValue, bucket.stats.maxValue, bucket.stats.minValue, bucket.stats.q1Value, bucket.stats.q3Value);
-                        countSeries.Points.AddXY(bucket.minXValue, bucket.stats.count);
+                        if (bucket.stats.count > 0)
+                        {
+                            avgSeries.Points.AddXY(bucket.minXValue, bucket.stats.avgValue);
+                            //statsSeries.Points.AddXY(bucket.minXValue, bucket.stats.maxValue, bucket.stats.minValue, bucket.stats.q1Value, bucket.stats.q3Value);
+                            countSeries.Points.AddXY(bucket.minXValue, bucket.stats.count);
+                        }
+                    }
+                }
+
+                {
+                    Series cunningHystogramm = series["Cunning histogramm"];
+                    cunningHystogramm.Points.Clear();
+                    foreach (Stats2D.Bucket bucket in CunningHistogramm.yBuckets)
+                    {
+                        if (bucket.stats.count > 0)
+                        {
+                            cunningHystogramm.Points.AddXY(bucket.minXValue, bucket.stats.count);
+                        }
                     }
                 }
             }

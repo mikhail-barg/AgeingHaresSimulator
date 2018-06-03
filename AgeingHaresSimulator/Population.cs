@@ -17,6 +17,7 @@ namespace AgeingHaresSimulator
         internal Stats SurvivabilityStats = new Stats(new List<double>());
         internal Stats AgeAtDeathStats = new Stats(new List<double>());
         internal Stats2D SurvivabilityByAgeStats = new Stats2D(0, 0, 0, null);
+        internal Stats2D CunningHistogramm = new Stats2D(0, 0, 0, null);
 
         private List<Species> m_speciesList;
 
@@ -138,6 +139,8 @@ namespace AgeingHaresSimulator
             }
 
             this.m_speciesList.AddRange(offsprings);
+
+            this.CunningHistogramm = Stats2D.CreateForCounts(0, settings.MaximalCunning, 0.25, m_speciesList.Select(item => item.cunning));
         }
     }
 }

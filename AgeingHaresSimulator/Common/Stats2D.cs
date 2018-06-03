@@ -80,5 +80,10 @@ namespace AgeingHaresSimulator.Common
                 .Select((stats, index) => new Bucket(index, index * xBucketSize + xMin, (index + 1) * xBucketSize + xMin, index * xBucketSize + xBucketSize / 2 + xMin, stats))
                 .ToList();
         }
+
+        public static Stats2D CreateForCounts(double xMin, double xMax, double xBucketSize, IEnumerable<double> xValues)
+        {
+            return new Stats2D(xMin, xMax, xBucketSize, xValues.Select(x => Tuple.Create(x, 1.0)));
+        }
     }
 }
