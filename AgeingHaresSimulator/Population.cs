@@ -37,7 +37,7 @@ namespace AgeingHaresSimulator
             ++Year;
             Selection(crysisPower, random, settings);
             Ageing(settings);
-            Breeding(random, settings);
+            Breeding(random, settings, crysisPower);
         }
 
         private void Selection(double crysisPower, Random random, Settings settings)
@@ -87,7 +87,23 @@ namespace AgeingHaresSimulator
             }
         }
 
-        private void Breeding(Random random, Settings settings)
+        private static double SimilarityDistanceSquared(Species species1, Species species2, double maxCunning, double maxAgeingSpeed)
+        {
+            if (maxCunning == 0)
+            {
+                maxCunning = 1;
+            }
+            if (maxAgeingSpeed == 0)
+            {
+                maxAgeingSpeed = 1;
+            }
+            double cunningDiff = (species1.cunning - species2.cunning) / maxCunning;
+            double speedDiff = (species1.ageingSpeed - species2.ageingSpeed) / maxAgeingSpeed;
+
+            return cunningDiff * cunningDiff + speedDiff * speedDiff; 
+        }
+
+        private void Breeding(Random random, Settings settings, double crysisPower)
         {
             List<Species> parents = new List<Species>(this.m_speciesList.Count);
             double matingProbability = settings.PopulationSizeToMatingProbabilityTransform(this.m_speciesList.Count);
@@ -102,21 +118,59 @@ namespace AgeingHaresSimulator
             List<Species> offsprings = new List<Species>();
             if (settings.SexualReproduction)
             {
-                random.Shuffle(parents);
                 if (parents.Count > 1)
                 {
-                    for (int i = 0; i < parents.Count; i += 2)
+                    switch (settings.MatingStrategy)
                     {
-                        Species parent1 = parents[i];
-                        int j = i + 1;
-                        if (j >= parents.Count)
+                    case Settings.MatingStrategyType.Random:
+                        random.Shuffle(parents);
+                        for (int i = 0; i < parents.Count; i += 2)
                         {
-                            j = 0;
-                        }
-                        Species parent2 = parents[j];
+                            Species parent1 = parents[i];
+                            int j = i + 1;
+                            if (j >= parents.Count)
+                            {
+                                j = 0;
+                            }
+                            Species parent2 = parents[j];
 
-                        Species offspring = Species.CreateOffspringSex(parent1, parent2, random, settings);
-                        offsprings.Add(offspring);
+                            Species offspring = Species.CreateOffspringSex(parent1, parent2, random, settings);
+                            offsprings.Add(offspring);
+                        }
+                        break;
+
+                    case Settings.MatingStrategyType.PositiveAssortion:
+                        parents = parents.OrderByDescending(item => item.GetSurvivability(crysisPower)).ToList();   //descending because we'll be taking last from list as it's much faster
+                        {
+                            double maxCunning = parents.Max(item => item.cunning);
+                            double maxAgeingSpeed = parents.Max(item => item.ageingSpeed);
+                            while (parents.Count > 2)
+                            {
+                                Species parent1 = parents[parents.Count - 1];
+                                parents.RemoveAt(parents.Count - 1);
+
+                                int bestPartnerIndex = 0;
+                                double bestPartnerDistance = SimilarityDistanceSquared(parent1, parents[bestPartnerIndex], maxCunning, maxAgeingSpeed);
+                                for (int i = 1; i < parents.Count; ++i)
+                                {
+                                    double distance = SimilarityDistanceSquared(parent1, parents[i], maxCunning, maxAgeingSpeed);
+                                    if (distance < bestPartnerDistance)
+                                    {
+                                        bestPartnerDistance = distance;
+                                        bestPartnerIndex = i;
+                                    }
+                                }
+
+                                Species parent2 = parents[bestPartnerIndex];
+                                parents.RemoveAt(bestPartnerIndex);
+                                Species offspring = Species.CreateOffspringSex(parent1, parent2, random, settings);
+                                offsprings.Add(offspring);
+                            }
+                        }
+                        break;
+
+                    default:
+                        throw new ApplicationException("Unexpected strategy " + settings.MatingStrategy);
                     }
                 }
             }
