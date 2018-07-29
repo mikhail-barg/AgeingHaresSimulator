@@ -32,7 +32,7 @@ namespace AgeingHaresSimulator
         }
 
         [JsonProperty()]
-        private decimal SettingsVersion { get; } = 1.4m;
+        private decimal SettingsVersion { get; } = 1.6m;
 
         [Category("1. Initial"), Description("Number of individuals in initial population")]
         public int InitialPopulationSize { get; set; } = 25;
